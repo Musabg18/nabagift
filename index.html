@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لعبة نبأ</title>
+<style>
+body {
+font-family: 'Arial', sans-serif;
+text-align: center;
+background: url('media/1.jpg') no-repeat center center;
+color: #333;
+margin: 0;
+padding: 0;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+min-height: 100vh;
+position: relative;
+}
+/* Added a class for the music button */
+.music-btn {
+position: absolute;
+top: 20px;
+right: 20px;
+padding: 10px 20px;
+background-color: #ff8a11;
+color: white;
+border: none;
+border-radius: 8px;
+cursor: pointer;
+transition: all 0.3s;
+z-index: 1000;
+}
+.music-btn:hover {
+background-color: #ff637d;
+transform: scale(1.1);
+}
+.paper {
+margin: 20px auto;
+width: 90%;
+max-width: 400px;
+background: rgba(255, 255, 255, 0.9);
+border-radius: 15px;
+box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+padding: 20px;
+}
+.option-container {
+display: flex;
+justify-content: space-around;
+gap: 10px;
+}
+.option, #start-btn {
+flex: 1;
+padding: 12px;
+background-color: #ff85a1;
+color: white;
+border: none;
+border-radius: 8px;
+cursor: pointer;
+transition: all 0.3s;
+}
+.option:hover, #start-btn {
+background-color: #ff637d;
+transform: scale(1.1);
+}
+.message {
+display: none;
+background: rgba(0, 0, 0, 0.8);
+color: white;
+padding: 20px;
+position: fixed;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+border-radius: 10px;
+font-size: 18px;
+width: 300px;
+box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+.message img {
+width: 50px;
+margin-bottom: 10px;
+}
+#end-message {
+display: none;
+}
+#question-image {
+width: 100%;
+border-radius: 10px;
+}
+@media (max-width: 600px) {
+.paper {
+padding: 15px;
+width: 100%;
+}
+.option {
+font-size: 14px;
+}
+.message {
+width: 80%;
+}
+}
+</style>
+</head>
+<body>
+<!-- زر الموسيقى -->
+<button id="music-control-btn" class="music-btn" onclick="toggleMusic()">إيقاف الموسيقى</button>
+<!-- مشغل الموسيقى -->
+<audio id="background-music" autoplay loop>
+<source src="media/music.mp3" type="audio/mpeg">
+Your browser does not support the audio element.
+</audio>
+<div id="intro">
+<div class="paper">
+<p id="intro-text"></p>
+<button id="start-btn">ابدأ اللعبة</button>
+</div>
+</div>
+<div id="game" style="display: none;">
+<div class="paper">
+<img id="question-image" src="" alt="سؤال الصورة">
+<p id="question-text" style="margin: 10px 0; font-size: 18px; font-weight: bold;"></p>
+<div class="option-container">
+<button class="option" onclick="chooseOption(1)" id="option1"></button>
+<button class="option" onclick="chooseOption(2)" id="option2"></button>
+</div>
+</div>
+<div class="message" id="message">
+<img id="message-icon" src="" alt="Icon">
+<p id="message-text"></p>
+</div>
+</div>
+<div id="end-message" class="paper">
+<p>اذا جاوبتي على كل الاسئلة صاح كدا معناها انتي افضل صحبة وماف زيك واذا جاوبتي عليها غلط برضو نفس الشي ماف شي ح يتغير وهاك دي ورود هدية</p>
+<img src="media/10.jpg" alt="صورة النهاية" style="width: 100%; border-radius: 10px;">
+</div>
+<script>
+const music = document.getElementById("background-music");
+const musicBtn = document.getElementById("music-control-btn");
+let isMusicPlaying = true;
+function toggleMusic() {
+if (isMusicPlaying) {
+music.pause();
+musicBtn.textContent = "تشغيل الموسيقى";
+} else {
+music.play();
+musicBtn.textContent = "إيقاف الموسيقى";
+}
+isMusicPlaying = !isMusicPlaying;
+}
+const questions = [
+{
+image: "media/2.jpg",
+text: "ما اسم هذا المكان؟",
+options: ["جزيرة بالي ", "تركيا"],
+correct: 1
+},
+{
+image: "media/3.jpg",
+text: "من هو زعيم المافيا الحقيقي ",
+options: ["أيفران", "مصعب"],
+correct: 2
+},
+{
+image: "media/4.jpg",
+text: "ما هو هذا المكان ؟",
+options: ["تركيا ", "جزيرة بالي "],
+correct: 1
+},
+{
+ image: "media/5.jpg", 
+ text: "من هو بطل راوية ارض زيكولا؟",
+options: ["خالد", "مصعب"],
+correct: 2
+ },
+ {
+ image: "media/7.jpg",
+ text: "اذا حدث قتال بينك ومصعب من الذي سيفوز؟",
+ options: ["نبأ","مصعب"],
+correct: 2
+ }, 
+ {
+image: "media/6.jpg",
+text: "من هو باتمان الحقيقي؟",
+options: ["مصعب", "بروس وين"],
+correct: 1
+} 
+];
+let currentQuestion = 0;
+document.addEventListener("DOMContentLoaded", () => {
+const introTextEl = document.getElementById("intro-text");
+const startBtn = document.getElementById("start-btn");
+const introText = "اهلين نبأ كيفك عملت اللعبة دي عشانك عشان اخفف عليك ضغط القراية حبة واعتبريها هدية بسيطة باعتبارك زووولة مهمة ما تنسي تشغلي الموسيقى اسي ح تكوني مستنياني لاني قلت ليك دقايق واسي اتأخرت المهم خلي الاسئلة وفيها شوية تركات انتبهي😅😅😅";
+let index = 0;
+function typeIntroText() {
+if (index < introText.length) {
+introTextEl.textContent += introText[index];
+index++;
+setTimeout(typeIntroText, 50);
+}
+}
+typeIntroText();
+startBtn.addEventListener("click", () => {
+document.getElementById("intro").style.display = "none";
+document.getElementById("game").style.display = "block";
+showQuestion();
+});
+});
+function showQuestion() {
+const questionImageEl = document.getElementById("question-image");
+const questionTextEl = document.getElementById("question-text");
+const option1El = document.getElementById("option1");
+const option2El = document.getElementById("option2");
+const current = questions[currentQuestion];
+questionImageEl.src = current.image; // عرض الصورة
+questionTextEl.textContent = current.text; // عرض نص السؤال
+option1El.textContent = current.options[0]; // الخيار الأول
+option2El.textContent = current.options[1]; // الخيار الثاني
+}
+function chooseOption(option) {
+const messageEl = document.getElementById("message");
+const messageIcon = document.getElementById("message-icon");
+const messageText = document.getElementById("message-text");
+if (option === questions[currentQuestion].correct) {
+messageIcon.src = "media/8.jpg";
+messageText.textContent = "😁😁 شاطرة تستحقي بابلي هدية!";
+} else {
+messageIcon.src = "media/9.jpg";
+messageText.textContent = "بتبالغي والله ماف ليك اي بابلي😠😠";
+}
+messageEl.style.display = 'block';
+setTimeout(() => {
+messageEl.style.display = 'none';
+if (option === questions[currentQuestion].correct) {
+currentQuestion++;
+if (currentQuestion < questions.length) {
+showQuestion();
+} else {
+endGame();
+}
+}
+}, 2000);
+}
+function endGame() {
+document.getElementById("game").style.display = "none";
+document.getElementById("end-message").style.display = "block";
+}
+</script>
+</body>
+</html
